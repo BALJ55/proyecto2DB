@@ -13,14 +13,17 @@ class fileWorker():
         try:
             if not os.path.exists(path):
                 os.makedirs(self.data_folder + path)
+                return true
         except OSError:
             print('Error: Creating directory. ' + path)
+            return false
 
     # Crea archivos .txt y escribe el contenido que queremos en el archivo
     def createWrite_file(self, path, content):
         file = open(self.data_folder + path, "w")
         file.write(content)
         file.close()
+        return true
 
     # lista los objetos que se encuentren en en path especificado
     def list_files(self, path):
@@ -42,3 +45,4 @@ class fileWorker():
         if file.mode == "r":
             contenido = file.read()
             return (contenido)
+        return false
