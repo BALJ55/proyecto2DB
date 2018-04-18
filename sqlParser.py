@@ -645,6 +645,9 @@ class sqlParser ( Parser ):
         self._interp = ParserATNSimulator(self, self.atn, self.decisionsToDFA, self.sharedContextCache)
         self._predicates = None
 
+    def get_param(self, param):
+        return param
+
 
 
     class ParseContext(ParserRuleContext):
@@ -1108,7 +1111,6 @@ class sqlParser ( Parser ):
 
         def database_name(self):
             return self.getTypedRuleContext(sqlParser.Database_nameContext,0)
-
 
         def getRuleIndex(self):
             return sqlParser.RULE_create_database_stmt
@@ -5992,7 +5994,7 @@ class sqlParser ( Parser ):
             self.exitRule()
         return localctx
 
-    class New_database_nameContext(ParserRuleContext):
+    class  New_database_nameContext(ParserRuleContext):
 
         def __init__(self, parser, parent:ParserRuleContext=None, invokingState:int=-1):
             super().__init__(parent, invokingState)
