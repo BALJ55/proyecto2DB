@@ -1,41 +1,44 @@
 import os
 
-class fileWorker():
-    def  __init__(self):
-        current_dataBase = ""
-        print ("File Worker")
 
-    #Crea folders en el path que estemos especificand
-    def create_folder(path):
+class fileWorker():
+    data_folder = ""
+
+    def __init__(self):
+        data_folder = "./DBS"
+        print("File Worker")
+
+    # Crea folders en el path que estemos especificand
+    def create_folder(self, path):
         try:
             if not os.path.exists(path):
-                os.makedirs(path)
+                os.makedirs(self.data_folder + path)
         except OSError:
-            print ('Error: Creating directory. ' + path)
+            print('Error: Creating directory. ' + path)
 
-    #Crea archivos .txt y escribe el contenido que queremos en el archivo
-    def createWrite_file(path, content):
-        file = open(path, "w")
+    # Crea archivos .txt y escribe el contenido que queremos en el archivo
+    def createWrite_file(self, path, content):
+        file = open(self.data_folder + path, "w")
         file.write(content)
         file.close()
 
-    #lista los objetos que se encuentren en en path especificado
-    def list_files(path):
+    # lista los objetos que se encuentren en en path especificado
+    def list_files(self, path):
         files = []
-        for name in os.listdir(path):
+        for name in os.listdir(self.data_folder + path):
             if os.path.isfile(os.path.join(path, name)):
                 files.append(name)
-        return(files)
+        return (files)
 
-    #Agrega datos al archivo que se esta especificado
-    def append_file(path, content):
-        file = open(path, "a+")
+    # Agrega datos al archivo que se esta especificado
+    def append_file(self, path, content):
+        file = open(self.data_folder + path, "a+")
         file.write(content)
         file.close()
 
-    #Lee datos que se esten especificando en el path
-    def read_file(path):
-        file = open(path,"r")
+    # Lee datos que se esten especificando en el path
+    def read_file(self, path):
+        file = open(self.data_folder + path, "r")
         if file.mode == "r":
             contenido = file.read()
-            return(contenido)
+            return (contenido)
