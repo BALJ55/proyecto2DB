@@ -22,11 +22,11 @@ class fileWorker():
         return True
 
     # lista los objetos que se encuentren en en path especificado
-    def list_files(self, path):
+    def list_files(self, path = ""):
         files = []
         for name in os.listdir(data_folder + path):
-            if os.path.isfile(os.path.join(path, name)):
-                files.append(name)
+            files.append(name)
+
         return (files)
 
     # Agrega datos al archivo que se esta especificado

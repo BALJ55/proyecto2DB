@@ -12,8 +12,6 @@ fileManager = dbFileManager()
 
 
 class tokenInterpreter(sqlListener):
-    currentDatabase = None
-
     def __init__(self):
         pass
 
@@ -35,21 +33,16 @@ class tokenInterpreter(sqlListener):
     # !CREATE DATABASE SECTION
     # SHOW DATABASE SECTION
     def enterShow_databases_stmt(self, ctx: sqlParser.Show_databases_stmtContext):
-
+        print("bases de datos en sistema:")
+        print(fileManager.showDatabasesFS())
         pass
 
-    def exitShow_databases_stmt(self, ctx: sqlParser.Show_databases_stmtContext):
-        pass
     # !SHOW DATABASE SECTION
     # USE DATABASE SECION
     def enterUse_database_stmt(self, ctx: sqlParser.Use_database_stmtContext):
         datbase_name = self.getTokenValue(ctx.database_name())
         print("current database changed to: " + datbase_name)
-        self.currentDatabase = datbase_name
-        pass
-
-    def exitUse_database_stmt(self, ctx: sqlParser.Use_database_stmtContext):
-        pass
+        fileManager.useDatabaseFS(datbase_name)
 
     # !USE DATABASE SECION
     # DROP DATABASE SECTION
@@ -58,11 +51,7 @@ class tokenInterpreter(sqlListener):
         fileManager.removeDatabaseFS(database_name)
         pass
 
-    def exitDrop_database_stmt(self, ctx: sqlParser.Drop_database_stmtContext):
-        pass
-
     # !DROP DATABASE SECTION
-
     # CREATE TABLE SECTION
     def enterCreate_table_stmt(self, ctx: sqlParser.Create_table_stmtContext):
         table_name = self.getTokenValue(ctx.table_name())
@@ -70,10 +59,14 @@ class tokenInterpreter(sqlListener):
         for column in ctx.column_def():
             cols[self.getTokenValue(column.column_name())] = self.getTokenValue(column.type_name().name()[0])
         # create database files
-        if(fileManager.createTableFS(self.currentDatabase,table_name, cols)):
+        if fileManager.createTableFS( table_name, cols):
             print("SE HA CREADO LA TABLA " + table_name + " EXITOSAMENTE")
         pass
 
-    def exitCreate_table_stmt(self, ctx: sqlParser.Create_table_stmtContext):
-        pass
     # !CREATE TABLE SECTION
+    # SHOW TABLES SECTION
+    def enterShow_tables_stmt(self, ctx: sqlParser.Show_tables_stmtContext):
+        print("TABLES IN " + fileManager.getDatabaseFS())
+        print(fileManager.showTablesFS())
+        pass
+    # SHOW TABLES SECTION

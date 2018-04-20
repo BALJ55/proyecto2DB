@@ -53,8 +53,7 @@ def main(argv):
             if (text == 'exit'):
                 sys.exit()
 
-            parse(text);
-            print("Valid")
+            parse(text)
 
         except ParserException as e:
             print("Got a parser exception:", e.value)
