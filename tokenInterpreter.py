@@ -1,5 +1,6 @@
 from sqlListener import sqlListener
 from dbFileManager import dbFileManager
+
 import pdb
 
 if __name__ is not None and "." in __name__:
@@ -21,7 +22,7 @@ class tokenInterpreter(sqlListener):
     def getTokenValue(self, name):
         return name.any_name().IDENTIFIER().getText()
 
-    # CREATE SECTION
+    # CREATE DATABASE SECTION
     def enterCreate_database_stmt(self, ctx: sqlParser.Create_database_stmtContext):
         database_name = self.getTokenValue(ctx.database_name())
         fileManager.createDatabaseFS(database_name)
@@ -30,16 +31,15 @@ class tokenInterpreter(sqlListener):
         print("DATABASE CREATE EXECUTED")
         pass
 
-    # !CREATE SECTION
-    # ALTER TABLE SECTION
-    def enterAlter_database_stmt(self, ctx: sqlParser.Alter_database_stmtContext):
-        target_database = ctx.database_name().any_name().IDENTIFIER()
+    # !CREATE DATABASE SECTION
+    # SHOW DATABASE SECTION
+    def enterShow_databases_stmt(self, ctx: sqlParser.Show_databases_stmtContext):
+
         pass
 
-    def exitAlter_database_stmt(self, ctx: sqlParser.Alter_database_stmtContext):
+    def exitShow_databases_stmt(self, ctx: sqlParser.Show_databases_stmtContext):
         pass
-
-    # !ALTER TABLE SECTION
+    # !SHOW DATABASE SECTION
     # USE DATABASE SECION
     def enterUse_database_stmt(self, ctx: sqlParser.Use_database_stmtContext):
         datbase_name = self.getTokenValue(ctx.database_name())
@@ -48,4 +48,33 @@ class tokenInterpreter(sqlListener):
 
     def exitUse_database_stmt(self, ctx: sqlParser.Use_database_stmtContext):
         pass
+
     # !USE DATABASE SECION
+    # DROP DATABASE SECTION
+    def enterDrop_database_stmt(self, ctx: sqlParser.Drop_database_stmtContext):
+        database_name = self.getTokenValue(ctx.database_name())
+        fileManager.removeDatabaseFS(database_name)
+        pass
+
+    def exitDrop_database_stmt(self, ctx: sqlParser.Drop_database_stmtContext):
+        pass
+
+    # !DROP DATABASE SECTION
+
+    # CREATE TABLE SECTION
+    def enterCreate_table_stmt(self, ctx: sqlParser.Create_table_stmtContext):
+        print(ctx)
+        table_name = self.getTokenValue(ctx.table_name())
+        print(table_name)
+        cols = {}
+        for column in ctx.column_def():
+            cols[self.getTokenValue(column.column_name())] = self.getTokenValue(column.type_name().name()[0])
+        print(cols)
+        if(fileManager.createTableFS(table_name, cols)):
+            print("SE HA CREADO LA TABLA " + table_name + " EXITOSAMENTE")
+            # pdb.set_trace()
+        pass
+
+    def exitCreate_table_stmt(self, ctx: sqlParser.Create_table_stmtContext):
+        pass
+    # !CREATE TABLE SECTION

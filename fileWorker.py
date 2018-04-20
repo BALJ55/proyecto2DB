@@ -42,8 +42,9 @@ class fileWorker():
             contenido = file.read()
             return (contenido)
 
-    def remove_folder(self,path):
+    def remove_folder(self, path):
 
-        if os.path.exists(self.data_folder + path):
-            shutil.rmtree(self.data_folder + path)
-            print("Se ha eliminado correctamente la carpeta: "+self.data_folder + path)
+        if os.path.exists(data_folder + path):
+            shutil.rmtree(data_folder + path)
+            return True
+        return False
