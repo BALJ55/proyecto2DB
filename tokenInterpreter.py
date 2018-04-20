@@ -12,6 +12,7 @@ fileManager = dbFileManager()
 
 
 class tokenInterpreter(sqlListener):
+    currentDatabase = None
 
     def __init__(self):
         pass
@@ -43,7 +44,8 @@ class tokenInterpreter(sqlListener):
     # USE DATABASE SECION
     def enterUse_database_stmt(self, ctx: sqlParser.Use_database_stmtContext):
         datbase_name = self.getTokenValue(ctx.database_name())
-        fileManager.useDatabaseFS(datbase_name)
+        print("current database changed to: " + datbase_name)
+        self.currentDatabase = datbase_name
         pass
 
     def exitUse_database_stmt(self, ctx: sqlParser.Use_database_stmtContext):
@@ -63,16 +65,13 @@ class tokenInterpreter(sqlListener):
 
     # CREATE TABLE SECTION
     def enterCreate_table_stmt(self, ctx: sqlParser.Create_table_stmtContext):
-        print(ctx)
         table_name = self.getTokenValue(ctx.table_name())
-        print(table_name)
         cols = {}
         for column in ctx.column_def():
             cols[self.getTokenValue(column.column_name())] = self.getTokenValue(column.type_name().name()[0])
-        print(cols)
-        if(fileManager.createTableFS(table_name, cols)):
+        # create database files
+        if(fileManager.createTableFS(self.currentDatabase,table_name, cols)):
             print("SE HA CREADO LA TABLA " + table_name + " EXITOSAMENTE")
-            # pdb.set_trace()
         pass
 
     def exitCreate_table_stmt(self, ctx: sqlParser.Create_table_stmtContext):
