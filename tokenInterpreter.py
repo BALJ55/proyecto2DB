@@ -23,14 +23,8 @@ class tokenInterpreter(sqlListener):
 
     # CREATE SECTION
     def enterCreate_database_stmt(self, ctx: sqlParser.Create_database_stmtContext):
-        # print("Nombre de la tabla")
-        databaseName = self.getTokenValue(ctx.database_name())
-        fileManager.createDatabaseFS(databaseName)
-
-        print(databaseName)
-
-    #     @TODO: IMPLEMENTAR CREADO DE CARPETA
-    #     @TODO: IMPLEMENTAR CREADO DE DBS EN CARPETA
+        database_name = self.getTokenValue(ctx.database_name())
+        fileManager.createDatabaseFS(database_name)
 
     def exitCreate_database_stmt(self, ctx: sqlParser.Create_database_stmtContext):
         print("DATABASE CREATE EXECUTED")
@@ -44,4 +38,14 @@ class tokenInterpreter(sqlListener):
 
     def exitAlter_database_stmt(self, ctx: sqlParser.Alter_database_stmtContext):
         pass
-# !ALTER TABLE SECTION
+
+    # !ALTER TABLE SECTION
+    # USE DATABASE SECION
+    def enterUse_database_stmt(self, ctx: sqlParser.Use_database_stmtContext):
+        datbase_name = self.getTokenValue(ctx.database_name())
+        fileManager.useDatabaseFS(datbase_name)
+        pass
+
+    def exitUse_database_stmt(self, ctx: sqlParser.Use_database_stmtContext):
+        pass
+    # !USE DATABASE SECION

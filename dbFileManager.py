@@ -4,6 +4,7 @@ from fileWorker import fileWorker
 class dbFileManager():
     currentDatabase = ''
     dbSchemaTerm = '.schem'
+    dbInfoTerm = '.dat'
     fileWorker = None
 
     def __init__(self):
@@ -11,7 +12,8 @@ class dbFileManager():
 
     def createDatabaseFS(self, database):
         self.fileWorker.create_folder(database)
-        self.fileWorker.createWrite_file(database+"/"+database+self.dbSchemaTerm,"[]")
 
-    def useTableFS(self, database):
+    def useDatabaseFS(self, database):
+        print("current database changed to: "+database)
         self.currentDatabase = database
+
