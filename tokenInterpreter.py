@@ -1,6 +1,6 @@
 from sqlListener import sqlListener
 from dbFileManager import dbFileManager
-
+from dataManager import dbDataManager
 import pdb
 
 if __name__ is not None and "." in __name__:
@@ -9,6 +9,7 @@ else:
     from sqlParser import sqlParser
 
 fileManager = dbFileManager()
+dataManager = dbDataManager()
 
 
 class tokenInterpreter(sqlListener):
@@ -19,7 +20,8 @@ class tokenInterpreter(sqlListener):
         print("Hello world. At the input has been already validated")
 
     def getTokenValue(self, name):
-        return name.any_name().IDENTIFIER().getText()
+        return name.getText()
+
 
     # CREATE DATABASE SECTION
     def enterCreate_database_stmt(self, ctx: sqlParser.Create_database_stmtContext):
@@ -41,8 +43,8 @@ class tokenInterpreter(sqlListener):
     # USE DATABASE SECION
     def enterUse_database_stmt(self, ctx: sqlParser.Use_database_stmtContext):
         datbase_name = self.getTokenValue(ctx.database_name())
-        print("current database changed to: " + datbase_name)
         fileManager.useDatabaseFS(datbase_name)
+        print("current database changed to: " + datbase_name)
 
     # !USE DATABASE SECION
     # DROP DATABASE SECTION
@@ -57,9 +59,11 @@ class tokenInterpreter(sqlListener):
         table_name = self.getTokenValue(ctx.table_name())
         cols = {}
         for column in ctx.column_def():
-            cols[self.getTokenValue(column.column_name())] = self.getTokenValue(column.type_name().name()[0])
+            type = self.getTokenValue(column.type_name().name()[0])
+            if dataManager.validateCreateTableTypes(type):
+                cols[self.getTokenValue(column.column_name())] = type
         # create database files
-        if fileManager.createTableFS( table_name, cols):
+        if fileManager.createTableFS(table_name, cols):
             print("SE HA CREADO LA TABLA " + table_name + " EXITOSAMENTE")
         pass
 
@@ -69,4 +73,20 @@ class tokenInterpreter(sqlListener):
         print("TABLES IN " + fileManager.getDatabaseFS())
         print(fileManager.showTablesFS())
         pass
+
     # SHOW TABLES SECTION
+
+    # SELECT SECTION
+    def enterFactored_select_stmt(self, ctx: sqlParser.Factored_select_stmtContext):
+        print("here")
+
+    # !SELECT SECTION
+
+    def enterInsert_stmt(self, ctx: sqlParser.Insert_stmtContext):
+
+        tableName = self.getTokenValue(ctx.table_name())
+        tableData = eval(fileManager.readTableFS(tableName))
+        print(tableData)
+        tableData.append(tuple([dataManager.getDataInFormat(self.getTokenValue(value)) for value in ctx.expr()]))
+        fileManager.insertTableFS(tableName,str( tableData))
+        print("INSERT A "+tableName+" EXITOSO")

@@ -41,10 +41,16 @@ class dbFileManager():
         else:
             raise ValueError('NO SE HA SELECCIONADO LA BASE DE DATOS')
 
-    def readTableFS(self, table_name):
-        decoder = json.JSONDecoder(object_pairs_hook=collections.OrderedDict)
-
     def useDatabaseFS(self, database):
+        if database not in self.showDatabasesFS():
+            raise ValueError(database + " NO EXISTE ENTRE LAS BASES DE DATOS")
         self.currentDatabase = database
+
     def getDatabaseFS(self):
         return self.currentDatabase
+
+    def insertTableFS(self, table, data):
+        self.fileWorker.createWrite_file(self.currentDatabase + "/" + table + "/" + table + self.dbInfoTerm, data)
+
+    def readTableFS(self, table):
+        return self.fileWorker.read_file(self.currentDatabase + "/" + table + "/" + table + self.dbInfoTerm)

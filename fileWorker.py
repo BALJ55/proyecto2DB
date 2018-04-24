@@ -22,7 +22,7 @@ class fileWorker():
         return True
 
     # lista los objetos que se encuentren en en path especificado
-    def list_files(self, path = ""):
+    def list_files(self, path=""):
         files = []
         for name in os.listdir(data_folder + path):
             files.append(name)
@@ -38,9 +38,10 @@ class fileWorker():
     # Lee datos que se esten especificando en el path
     def read_file(self, path):
         file = open(data_folder + path, "r")
-        if file.mode == "r":
-            contenido = file.read()
-            return (contenido)
+        return file.read()
+        # if file.mode == "r":
+        #     contenido = file.read()
+        #     return (contenido)
 
     def remove_folder(self, path):
 
