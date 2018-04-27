@@ -49,3 +49,11 @@ class fileWorker():
             shutil.rmtree(data_folder + path)
             return True
         return False
+
+
+    #Renombra folders que se seleccione
+    def rename_file(self, path, newPath):
+        if os.path.exists(data_folder + path):
+            os.rename(data_folder + path, data_folder + newPath)
+            return True
+        return False
