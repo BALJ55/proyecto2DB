@@ -93,16 +93,24 @@ class tokenInterpreter(sqlListener):
 
         newData = []
 
+        values = [self.getTokenValue(value) for value in ctx.expr()]
+        colNames = [col[0] for col in tableStructure]
+        colTypes = [col[1] for col in tableStructure]
+
+        if len(values) > len(tableStructure):
+            raise ValueError("INSERT REQUEST HAS MORE VALUES THAN THE TABLE LENGTH")
+
         # specific insert stmt
         if len(targetCols):
-            if not len(targetCols) == len(tableStructure):
-                raise ValueError("LONGITUD DE COLUMNAS NO ES LA CORRECTA")
-            index = 0
-            for value in ctx.expr():
-                if targetCols[index] != tableStructure[index][0]:
-                    raise ValueError("colum " + targetCols[index] + " NO ESTÁ DEFINIDA")
-                newData.append(dataManager.matchData(tableStructure[index][1], self.getTokenValue(value)))
-                index = index + 1
+            newData = [""] * len(tableStructure)
+            for targetCol in targetCols:
+                if targetCol in colNames:
+                    colIndex = targetCols.index(targetCol)
+                else:
+                    raise ValueError("COLUMN " + targetCol + " DOES NOT EXIST IN TABLE " + tableName)
+                newData[colIndex] = dataManager.matchData(colTypes[colIndex], values[colIndex])
+
+
 
         # regular insert stmt
         else:
@@ -111,8 +119,9 @@ class tokenInterpreter(sqlListener):
                 newData.append(dataManager.matchData(tableStructure[index][1], self.getTokenValue(value)))
                 index = index + 1
 
-        print(newData)
         if len(newData):
+            if None in newData:
+                raise ValueError("INSERT QUERY HAS UNCONSISTENT TYPES")
             tableData.append(tuple(newData))
             fileManager.insertTableFS(tableName, str(tableData))
             print("INSERT A " + tableName + " EXITOSO")
