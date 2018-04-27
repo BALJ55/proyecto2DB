@@ -22,7 +22,7 @@ class dbFileManager():
         if self.currentDatabase is not None:
             return self.fileWorker.list_files(self.currentDatabase)
         else:
-            raise TypeError("NO SE HA SELECCIONADO UNA BASE DE DATOS")
+            raise TypeError("A DATABASE HAS NOT BEEN SELECTED")
 
     def removeDatabaseFS(self, database):
         self.fileWorker.remove_folder(database)
@@ -39,11 +39,11 @@ class dbFileManager():
                 "[]")  # crear array vacío para información de la tabla
             return True
         else:
-            raise ValueError('NO SE HA SELECCIONADO LA BASE DE DATOS')
+            raise ValueError('THE DATABASE WAS NOT SELECTED')
 
     def useDatabaseFS(self, database):
         if database not in self.showDatabasesFS():
-            raise ValueError(database + " NO EXISTE ENTRE LAS BASES DE DATOS")
+            raise ValueError(database + " DOES NOT EXIST IN THE DATABASE")
         self.currentDatabase = database
 
     def getDatabaseFS(self):

@@ -6,7 +6,7 @@ data_folder = "DBS/"
 
 class fileWorker():
 
-    # Crea folders en el path que estemos especificand
+    # Crea folders en el path que estemos especificandO
     def create_folder(self, path):
         try:
             if not os.path.exists(path):

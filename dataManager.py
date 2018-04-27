@@ -15,7 +15,7 @@ class dbDataManager():
 
     def validateCreateTableTypes(self, input):
         if input not in self.allowedDataTypes:
-            raise ValueError(input + "NO ES UN TIPO DE DATO VALIDO")
+            raise ValueError(input + "IS NOT VALID DATA")
         else:
             return True
 
@@ -66,17 +66,17 @@ class dbDataManager():
             try:
                 return int(value)
             except Exception:
-                print(value + " NO ES DE TIPO INT")
+                print(value + " IS NOT A INTEGER")
         if type == "FLOAT":
             try:
                 return float(value)
             except Exception:
-                print(value + " NO ES DE TIPO FLOAT")
+                print(value + " IS NOT A FLOAT")
         if type == "CHAR" or type == "DATE" or type == "VARCHAR":
             try:
                 return str(value)
             except Exception:
-                print(value + " NO ES DE TIPO CHAR O DATE")
+                print(value + " IS NOT A CHAR OR DATE")
 
     def generateSpecificColOrder(self, cols, structure):
         return [any(e[0] == col for e in structure) for col in cols]
