@@ -60,8 +60,6 @@ class dbDataManager():
         return param
 
     def matchData(self, type, value):
-        print(type)
-        print(value)
         if type == "INT":
             try:
                 return int(value)
