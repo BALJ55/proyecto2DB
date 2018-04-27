@@ -22,7 +22,6 @@ class tokenInterpreter(sqlListener):
     def getTokenValue(self, name):
         return name.getText()
 
-
     # CREATE DATABASE SECTION
     def enterCreate_database_stmt(self, ctx: sqlParser.Create_database_stmtContext):
         database_name = self.getTokenValue(ctx.database_name())
@@ -57,11 +56,11 @@ class tokenInterpreter(sqlListener):
     # CREATE TABLE SECTION
     def enterCreate_table_stmt(self, ctx: sqlParser.Create_table_stmtContext):
         table_name = self.getTokenValue(ctx.table_name())
-        cols = {}
+        cols = []
         for column in ctx.column_def():
-            type = self.getTokenValue(column.type_name().name()[0])
-            if dataManager.validateCreateTableTypes(type):
-                cols[self.getTokenValue(column.column_name())] = type
+            type = dataManager.validateCreateTableTypes(self.getTokenValue(column.type_name().name()[0]))
+            key = self.getTokenValue(column.column_name())
+            cols.append((key, type))
         # create database files
         if fileManager.createTableFS(table_name, cols):
             print("SE HA CREADO LA TABLA " + table_name + " EXITOSAMENTE")
@@ -81,12 +80,43 @@ class tokenInterpreter(sqlListener):
         print("here")
 
     # !SELECT SECTION
-
+    # INSERT SECTION
     def enterInsert_stmt(self, ctx: sqlParser.Insert_stmtContext):
 
         tableName = self.getTokenValue(ctx.table_name())
-        tableData = eval(fileManager.readTableFS(tableName))
-        print(tableData)
-        tableData.append(tuple([dataManager.getDataInFormat(self.getTokenValue(value)) for value in ctx.expr()]))
-        fileManager.insertTableFS(tableName,str( tableData))
-        print("INSERT A "+tableName+" EXITOSO")
+        tableData = eval(fileManager.readTableFS(tableName, "data"))
+
+        # table structure
+        tableStructure = eval(fileManager.readTableFS(tableName, "structure"))
+        # input col structure
+        targetCols = [self.getTokenValue(col) for col in ctx.column_name()]
+
+        newData = []
+
+        # specific insert stmt
+        if len(targetCols):
+            if not len(targetCols) == len(tableStructure):
+                raise ValueError("LONGITUD DE COLUMNAS NO ES LA CORRECTA")
+            index = 0
+            for value in ctx.expr():
+                if targetCols[index] != tableStructure[index][0]:
+                    raise ValueError("colum " + targetCols[index] + " NO ESTÁ DEFINIDA")
+                newData.append(dataManager.matchData(tableStructure[index][1], self.getTokenValue(value)))
+                index = index + 1
+
+        # regular insert stmt
+        else:
+            index = 0
+            for value in ctx.expr():
+                newData.append(dataManager.matchData(tableStructure[index][1], self.getTokenValue(value)))
+                index = index + 1
+
+        print(newData)
+        if len(newData):
+            tableData.append(tuple(newData))
+            fileManager.insertTableFS(tableName, str(tableData))
+            print("INSERT A " + tableName + " EXITOSO")
+        else:
+            dataManager.raiseError(False, "CANNOT INSERT EMPTY TUPLE")
+
+    # !INSERT SECTION

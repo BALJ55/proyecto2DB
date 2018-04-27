@@ -52,5 +52,5 @@ class dbFileManager():
     def insertTableFS(self, table, data):
         self.fileWorker.createWrite_file(self.currentDatabase + "/" + table + "/" + table + self.dbInfoTerm, data)
 
-    def readTableFS(self, table):
-        return self.fileWorker.read_file(self.currentDatabase + "/" + table + "/" + table + self.dbInfoTerm)
+    def readTableFS(self, table, fileType):
+        return self.fileWorker.read_file(self.currentDatabase + "/" + table + "/" + table + (self.dbInfoTerm if fileType == "data" else self.dbSchemaTerm))

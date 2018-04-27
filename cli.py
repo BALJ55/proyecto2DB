@@ -47,20 +47,19 @@ Las construcciones validas para esta gramatica son todas aquellas
 
 def main(argv):
     while True:
-        text = input("> ")
-
-        if (text == 'exit'):
-            sys.exit()
-
-        parse(text)
+        # text = input("> ")
+        #
+        # if (text == 'exit'):
+        #     sys.exit()
+        #
+        # parse(text)
         try:
-            pass
-            # text = input("> ")
-            #
-            # if (text == 'exit'):
-            #     sys.exit()
-            #
-            # parse(text)
+            text = input("> ")
+
+            if (text == 'exit'):
+                sys.exit()
+
+            parse(text)
 
         except ParserException as e:
             print("Got a parser exception:", e.value)

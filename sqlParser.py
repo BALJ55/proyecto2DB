@@ -2339,6 +2339,7 @@ class sqlParser ( Parser ):
 
         def enterRule(self, listener:ParseTreeListener):
             if hasattr( listener, "enterInsert_stmt" ):
+
                 listener.enterInsert_stmt(self)
 
         def exitRule(self, listener:ParseTreeListener):
