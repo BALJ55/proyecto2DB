@@ -74,12 +74,6 @@ class tokenInterpreter(sqlListener):
         pass
 
     # SHOW TABLES SECTION
-
-    # SELECT SECTION
-    def enterFactored_select_stmt(self, ctx: sqlParser.Factored_select_stmtContext):
-        print("here")
-
-    # !SELECT SECTION
     # INSERT SECTION
     def enterInsert_stmt(self, ctx: sqlParser.Insert_stmtContext):
 
@@ -129,3 +123,42 @@ class tokenInterpreter(sqlListener):
             dataManager.raiseError(False, "CANNOT INSERT EMPTY TUPLE")
 
     # !INSERT SECTION
+    # SELECT SECTION
+    def enterSelect_core(self, ctx: sqlParser.Select_coreContext):
+
+        tableName = self.getTokenValue(ctx.table_or_subquery()[0].table_name())
+
+        tableStructure = eval(fileManager.readTableFS(tableName, "structure"))
+        tableData = eval(fileManager.readTableFS(tableName, "data"))
+        colNames = [col[0] for col in tableStructure]
+
+        # check if table exists in database
+        if tableName not in fileManager.showTablesFS():
+            raise ValueError("TABLE " + tableName + " DOES NOT EXIST IN " + fileManager.currentDatabase)
+
+        dataManager.setSavedData(tableData)
+        dataManager.setSavedStructure(tableStructure)
+
+        # insert target columns
+        targets = [self.getTokenValue(target) for target in ctx.result_column()]
+
+        if "*" in targets:
+            # @TODO: STUFF TO SELECT * COLS, INCLUDING REDUCE
+            print("send data to Manager")
+        else:
+            if all(elem in targets for elem in colNames):
+                print("send data to Manager")
+            else:
+                raise ValueError("ATLEAST ONE OF THE TARGET TABLES DOES NOT EXIST IN " + tableName)
+
+    # !SELECT SECTION
+
+    # SELECT REDUCE (WHERE) SECTION
+    def enterExprComparisonSecond(self, ctx: sqlParser.ExprComparisonSecondContext):
+        targetTable = self.getTokenValue(ctx.expr()[0])
+        targetCostraint = self.getTokenValue(ctx.expr()[1])
+        targetCondition = self.getTokenValue(ctx.children[1])
+
+        print("accept data and reduce")
+
+    # SELECT REDUCE (WHERE) SECTION

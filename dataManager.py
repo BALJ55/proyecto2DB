@@ -9,6 +9,8 @@ dv = dataValidator().getValidationRegex()
 
 class dbDataManager():
     allowedDataTypes = ['INT', 'FLOAT', 'DATE', 'CHAR']
+    savedData = []
+    savedStructure = []
 
     def __init__(self):
         pass
@@ -84,3 +86,10 @@ class dbDataManager():
             pass
         else:
             raise ValueError(message)
+
+    def setSavedData(self, data):
+        self.savedData = data
+
+    def setSavedStructure(self, structure):
+        self.savedStructure = structure
+
