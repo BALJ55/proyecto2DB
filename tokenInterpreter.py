@@ -106,10 +106,13 @@ class tokenInterpreter(sqlListener):
                     if (verifier == False):
                         newData[colIndex] = 'NULL'
                     else:
+                        #raise ValueError("COLUMN " + targetCol + "DOES NOT EXIST IN TABLE " + tableName)
                         newData[colIndex] = dataManager.matchData(colTypes[colIndex], values[valueIndex])
+                else:
+                    raise ValueError("COLUMN " + targetCol + " DOES NOT EXIST IN TABLE " + tableName)
 
 
-        # regular insert stmt
+                    # regular insert stmt
         else:
             index = 0
             for value in ctx.expr():
