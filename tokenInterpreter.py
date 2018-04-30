@@ -143,7 +143,6 @@ class tokenInterpreter(sqlListener):
         targets = [self.getTokenValue(target) for target in ctx.result_column()]
 
         if "*" in targets:
-            print(tableData)
             dataManager.setSavedData(tableData)
         else:
 
@@ -155,11 +154,14 @@ class tokenInterpreter(sqlListener):
                     for col in targetsIndex:
                         filteredValue.append(tup[col])
                     filteredData.append(tuple(filteredValue))
-                print(filteredData)
                 dataManager.setSavedData(filteredData)
 
             else:
                 raise ValueError("ATLEAST ONE OF THE TARGET TABLES DOES NOT EXIST IN " + tableName)
+
+        # Exit a parse tree produced by sqlParser#select_core.
+    def exitSelect_core(self, ctx: sqlParser.Select_coreContext):
+        print(dataManager.savedData)
 
     # !SELECT SECTION
 
@@ -173,5 +175,4 @@ class tokenInterpreter(sqlListener):
         )
         # save reduced array
         dataManager.setSavedData([item for item in dataManager.savedData if eval(builtCondition)])
-        print(dataManager.savedData)
     # SELECT REDUCE (WHERE) SECTION
