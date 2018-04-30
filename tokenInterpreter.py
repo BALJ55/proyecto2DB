@@ -176,3 +176,18 @@ class tokenInterpreter(sqlListener):
         # save reduced array
         dataManager.setSavedData([item for item in dataManager.savedData if eval(builtCondition)])
     # SELECT REDUCE (WHERE) SECTION
+    def enterAlter_table_stmt(self, ctx: sqlParser.Alter_table_stmtContext):
+        #se llama al show tables del FileManager
+        table_name_old = self.getTokenValue(ctx.table_name())
+        table_name_new = self.getTokenValue(ctx.new_table_name())
+        r=(fileManager.showTablesFS())
+        #recorrer el listado de tablas y verificar que existan
+        check = False
+        for tables in r:
+            #print(tables)
+            #print(table_name_old)
+            if (tables==table_name_old):
+                check = True
+
+        if (check == True):
+            (fileManager.renameFS(table_name_old, table_name_new))

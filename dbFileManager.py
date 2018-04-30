@@ -54,3 +54,6 @@ class dbFileManager():
 
     def readTableFS(self, table, fileType):
         return self.fileWorker.read_file(self.currentDatabase + "/" + table + "/" + table + (self.dbInfoTerm if fileType == "data" else self.dbSchemaTerm))
+
+    def renameFS(self, table_name_old, table_name_new):
+        return self.fileWorker.rename_files(self.currentDatabase + "/", self.currentDatabase + "/" + table_name_old + "/", table_name_old, table_name_new)

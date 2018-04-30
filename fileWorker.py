@@ -57,3 +57,14 @@ class fileWorker():
             os.rename(data_folder + path, data_folder + newPath)
             return True
         return False
+
+    def rename_files(self, folder_path, path, old_name, new_name):
+        for name in  os.listdir(data_folder + path):
+           indexType = name.index('.')
+           #print(name)
+           os.rename(data_folder + path + name, data_folder + path + new_name+name[indexType:])
+        for folder in os.listdir(data_folder + folder_path):
+            #print (folder)
+            print (new_name)
+            if (folder == old_name):
+                os.rename(data_folder + folder_path + folder, data_folder + folder_path + new_name)
