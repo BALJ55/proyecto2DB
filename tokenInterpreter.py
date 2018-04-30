@@ -99,11 +99,14 @@ class tokenInterpreter(sqlListener):
             newData = [""] * len(tableStructure)
             for targetCol in targetCols:
                 if targetCol in colNames:
-                    colIndex = colNames.index(targetCol)
-                else:
-                    raise ValueError("COLUMN " + targetCol + " DOES NOT EXIST IN TABLE " + tableName)
-                newData[colIndex] = dataManager.matchData(colTypes[colIndex], values[colIndex])
-
+                    colIndex = targetCols.index(targetCol)
+                    valueIndex = colNames.index(targetCol)
+                    verifier = len(values) > valueIndex
+                    print (verifier)
+                    if (verifier == False):
+                        newData[colIndex] = 'NULL'
+                    else:
+                        newData[colIndex] = dataManager.matchData(colTypes[colIndex], values[valueIndex])
 
 
         # regular insert stmt
