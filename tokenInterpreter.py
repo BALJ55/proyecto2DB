@@ -99,7 +99,7 @@ class tokenInterpreter(sqlListener):
             newData = [""] * len(tableStructure)
             for targetCol in targetCols:
                 if targetCol in colNames:
-                    colIndex = targetCols.index(targetCol)
+                    colIndex = colNames.index(targetCol)
                 else:
                     raise ValueError("COLUMN " + targetCol + " DOES NOT EXIST IN TABLE " + tableName)
                 newData[colIndex] = dataManager.matchData(colTypes[colIndex], values[colIndex])
@@ -136,18 +136,28 @@ class tokenInterpreter(sqlListener):
         if tableName not in fileManager.showTablesFS():
             raise ValueError("TABLE " + tableName + " DOES NOT EXIST IN " + fileManager.currentDatabase)
 
-        dataManager.setSavedData(tableData)
+        dataManager.setCachedData(tableData)
         dataManager.setSavedStructure(tableStructure)
 
         # insert target columns
         targets = [self.getTokenValue(target) for target in ctx.result_column()]
 
         if "*" in targets:
-            # @TODO: STUFF TO SELECT * COLS, INCLUDING REDUCE
-            print("send data to Manager")
+            print(tableData)
+            dataManager.setSavedData(tableData)
         else:
-            if all(elem in targets for elem in colNames):
-                print("send data to Manager")
+
+            if all(value in colNames for value in targets):
+                targetsIndex = [colNames.index(elem) for elem in targets]
+                filteredData = []
+                for tup in tableData:
+                    filteredValue = []
+                    for col in targetsIndex:
+                        filteredValue.append(tup[col])
+                    filteredData.append(tuple(filteredValue))
+                print(filteredData)
+                dataManager.setSavedData(filteredData)
+
             else:
                 raise ValueError("ATLEAST ONE OF THE TARGET TABLES DOES NOT EXIST IN " + tableName)
 
@@ -155,10 +165,13 @@ class tokenInterpreter(sqlListener):
 
     # SELECT REDUCE (WHERE) SECTION
     def enterExprComparisonSecond(self, ctx: sqlParser.ExprComparisonSecondContext):
-        targetTable = self.getTokenValue(ctx.expr()[0])
-        targetCostraint = self.getTokenValue(ctx.expr()[1])
-        targetCondition = self.getTokenValue(ctx.children[1])
-
-        print("accept data and reduce")
-
+        # build where clause
+        builtCondition = dataManager.queryWhereStringCLBuilder(
+            [col[0] for col in dataManager.savedStructure].index(self.getTokenValue(ctx.expr()[0])),
+            self.getTokenValue(ctx.expr()[1]),
+            self.getTokenValue(ctx.children[1])
+        )
+        # save reduced array
+        dataManager.setSavedData([item for item in dataManager.savedData if eval(builtCondition)])
+        print(dataManager.savedData)
     # SELECT REDUCE (WHERE) SECTION
