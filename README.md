@@ -7,11 +7,11 @@ DBMS escrito en python, SQL lexer generado con ANTLR4
 
 ---
 
-#Requerimientos:
+# Requerimientos:
 Antlr python: https://pypi.org/project/antlr4-python3-runtime/
 
 ---
 
-#Funcionamiento:
+# Funcionamiento:
 
 ```python cli.py``` Esto inicializa y ejecuta el DBMS, que reconoce y opera la mayoría de instrucciones SQL básicas
