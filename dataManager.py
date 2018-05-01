@@ -12,6 +12,7 @@ class dbDataManager():
     savedData = []
     cachedData = []
     savedStructure = []
+    multiples = False
     reductor = ""
 
     def __init__(self):
@@ -77,3 +78,22 @@ class dbDataManager():
 
     def setCachedData(self, data):
         self.cachedData = data
+
+    def addToCache(self, data):
+        self.cachedData.append(data)
+
+    def handleNullValue(self, data, bc):
+        returnData = []
+        for item in data:
+            try:
+                if eval(bc):
+                    returnData.append(item)
+            except TypeError:
+                pass
+        return returnData
+
+    def handleAndStmt(self,listas):
+        return [element for element in listas[0] if element in listas[1]]
+
+    def handleOrStmt(self,listas):
+        return listas[1] + [x for x in listas[0] if x not in listas[1]]

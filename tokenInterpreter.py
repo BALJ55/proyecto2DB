@@ -1,6 +1,7 @@
 from sqlListener import sqlListener
 from dbFileManager import dbFileManager
 from dataManager import dbDataManager
+from dataPrinter import dbDataPrinter
 import pdb
 
 if __name__ is not None and "." in __name__:
@@ -10,6 +11,7 @@ else:
 
 fileManager = dbFileManager()
 dataManager = dbDataManager()
+dataPrinter = dbDataPrinter()
 
 
 class tokenInterpreter(sqlListener):
@@ -138,7 +140,6 @@ class tokenInterpreter(sqlListener):
         if tableName not in fileManager.showTablesFS():
             raise ValueError("TABLE " + tableName + " DOES NOT EXIST IN " + fileManager.currentDatabase)
 
-        dataManager.setCachedData(tableData)
         dataManager.setSavedStructure(tableStructure)
 
         # insert target columns
@@ -164,7 +165,8 @@ class tokenInterpreter(sqlListener):
         # Exit a parse tree produced by sqlParser#select_core.
 
     def exitSelect_core(self, ctx: sqlParser.Select_coreContext):
-        print(dataManager.savedData)
+        dataPrinter.print_table(dataManager.savedData, [col[0] for col in dataManager.savedStructure])
+        # print(dataManager.savedData)
 
     # !SELECT SECTION
 
@@ -177,21 +179,58 @@ class tokenInterpreter(sqlListener):
             self.getTokenValue(ctx.children[1])
         )
         # save reduced array
-        dataManager.setSavedData([item for item in dataManager.savedData if eval(builtCondition)])
+        if dataManager.multiples:
+            # AND already handled reduction
+            pass
+            # dataManager.addToCache([item for item in dataManager.savedData if eval(builtCondition)])
+        else:
+            dataManager.setSavedData(dataManager.handleNullValue(dataManager.savedData, builtCondition))
 
-    # SELECT REDUCE (WHERE) SECTION
+    # ! SELECT REDUCE (WHERE) SECTION
+    # ALTER TABLE SECTION
     def enterAlter_table_stmt(self, ctx: sqlParser.Alter_table_stmtContext):
         # se llama al show tables del FileManager
         table_name_old = self.getTokenValue(ctx.table_name())
         table_name_new = self.getTokenValue(ctx.new_table_name())
         r = (fileManager.showTablesFS())
-        # recorrer el listado de tablas y verificar que existan
         check = False
         for tables in r:
-            # print(tables)
-            # print(table_name_old)
             if (tables == table_name_old):
                 check = True
-
-        if (check == True):
+        if (check):
             (fileManager.renameFS(table_name_old, table_name_new))
+
+    # ! ALTER TABLE SECTION
+    # SELECT AND SECTION
+    def enterExprAnd(self, ctx: sqlParser.ExprAndContext):
+        dataManager.multiples = True
+        conditions = ctx.expr()
+        reducedData = []
+
+        for condition in conditions:
+            builtCondition = dataManager.queryWhereStringCLBuilder(
+                [col[0] for col in dataManager.savedStructure].index(self.getTokenValue(condition.expr()[0])),
+                self.getTokenValue(condition.expr()[1]),
+                self.getTokenValue(condition.children[1])
+            )
+            reducedData.append(dataManager.handleNullValue(dataManager.savedData, builtCondition))
+
+        dataManager.setSavedData(dataManager.handleAndStmt(reducedData))
+
+    # ! SELECT AND SECTION
+    # SELECT OR SECTION
+    def enterExprOr(self, ctx: sqlParser.ExprOrContext):
+        dataManager.multiples = True
+        conditions = ctx.expr()
+        reducedData = []
+
+        for condition in conditions:
+            builtCondition = dataManager.queryWhereStringCLBuilder(
+                [col[0] for col in dataManager.savedStructure].index(self.getTokenValue(condition.expr()[0])),
+                self.getTokenValue(condition.expr()[1]),
+                self.getTokenValue(condition.children[1])
+            )
+            reducedData.append(dataManager.handleNullValue(dataManager.savedData, builtCondition))
+
+        dataManager.setSavedData(dataManager.handleOrStmt(reducedData))
+    # ! SELECT OR SECTION
