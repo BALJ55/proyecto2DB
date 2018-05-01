@@ -1,3 +1,4 @@
+
 class dbDataPrinter():
 
     def print_table(self, data, header):
