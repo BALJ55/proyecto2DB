@@ -268,7 +268,7 @@ class tokenInterpreter(sqlListener):
     # ! ALTER TABLE SECTION
     # SELECT AND SECTION
     def enterUpdate_stmt(self, ctx: sqlParser.Update_stmtContext):
-        # verificar que existe la tabla
+        # verificar que existe la tabla y su estructura
         tableName = self.getTokenValue(ctx.table_name())
         tableStructure = eval(fileManager.readTableFS(tableName, "structure"))
         # sacar el listado de tablas
@@ -279,7 +279,6 @@ class tokenInterpreter(sqlListener):
                 check = True
         # columnName = self.getTokenValue(column.column_name())
         # table structure
-
         # input col structure
         targetCols = [self.getTokenValue(col) for col in ctx.column_name()]
 
@@ -290,7 +289,7 @@ class tokenInterpreter(sqlListener):
         colTypes = [col[1] for col in tableStructure]
         check = True
 
-        # validar que existe el campo
+        # valida que existe el campo
         for cols in colNames:
             if (cols not in targetCols):
                 check = False
