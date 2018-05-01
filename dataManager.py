@@ -4,7 +4,6 @@ import re
 from collections import OrderedDict
 from dataRegex import dataValidator
 
-dv = dataValidator().getValidationRegex()
 
 
 class dbDataManager():
@@ -14,6 +13,7 @@ class dbDataManager():
     savedStructure = []
     multiples = False
     reductor = ""
+    dv = dataValidator().getValidationRegex()
 
     def __init__(self):
         pass
@@ -92,8 +92,12 @@ class dbDataManager():
                 pass
         return returnData
 
-    def handleAndStmt(self,listas):
+    def handleAndStmt(self, listas):
         return [element for element in listas[0] if element in listas[1]]
 
-    def handleOrStmt(self,listas):
+    def handleOrStmt(self, listas):
         return listas[1] + [x for x in listas[0] if x not in listas[1]]
+
+    def verboseOutput(self, verboseOn, message):
+        if verboseOn:
+            print(message)
