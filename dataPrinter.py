@@ -1,4 +1,3 @@
-
 class dataPrinter():
 
     def print_table(array, header):
