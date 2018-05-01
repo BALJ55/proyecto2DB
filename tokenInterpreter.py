@@ -267,6 +267,40 @@ class tokenInterpreter(sqlListener):
 
     # ! ALTER TABLE SECTION
     # SELECT AND SECTION
+    def enterUpdate_stmt(self, ctx: sqlParser.Update_stmtContext):
+        # verificar que existe la tabla
+        tableName = self.getTokenValue(ctx.table_name())
+        tableStructure = eval(fileManager.readTableFS(tableName, "structure"))
+        # sacar el listado de tablas
+        r = (fileManager.showTablesFS())
+        check = False
+        for tables in r:
+            if (tableName == r):
+                check = True
+        # columnName = self.getTokenValue(column.column_name())
+        # table structure
+
+        # input col structure
+        targetCols = [self.getTokenValue(col) for col in ctx.column_name()]
+
+        newData = []
+
+        values = [self.getTokenValue(value) for value in ctx.expr()]
+        colNames = [col[0] for col in tableStructure]
+        colTypes = [col[1] for col in tableStructure]
+        check = True
+
+        # validar que existe el campo
+        for cols in colNames:
+            if (cols not in targetCols):
+                check = False
+        if len(targetCols):
+            newData = [""] * len(tableStructure)
+            for column in colTypes:
+                colUpdate = targetCols.index(column)
+                valueUpdate = colNames.index(column)
+                newData[colUpdate] = dataManager.matchData(colTypes[colUpdate], values[valueUpdate])
+
     def enterExprAnd(self, ctx: sqlParser.ExprAndContext):
         dataManager.verboseOutput(self.verbouseOutput, "AND NODE DETECTED")
 
