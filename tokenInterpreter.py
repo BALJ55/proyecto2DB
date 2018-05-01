@@ -101,18 +101,14 @@ class tokenInterpreter(sqlListener):
                 if targetCol in colNames:
                     colIndex = targetCols.index(targetCol)
                     valueIndex = colNames.index(targetCol)
-                    verifier = len(values) > valueIndex
-                    print (verifier)
-                    if (verifier == False):
+                    if (not len(values) > valueIndex):
                         newData[colIndex] = 'NULL'
                     else:
-                        #raise ValueError("COLUMN " + targetCol + "DOES NOT EXIST IN TABLE " + tableName)
                         newData[colIndex] = dataManager.matchData(colTypes[colIndex], values[valueIndex])
                 else:
                     raise ValueError("COLUMN " + targetCol + " DOES NOT EXIST IN TABLE " + tableName)
 
-
-                    # regular insert stmt
+        # regular insert stmt
         else:
             index = 0
             for value in ctx.expr():
@@ -166,6 +162,7 @@ class tokenInterpreter(sqlListener):
                 raise ValueError("ATLEAST ONE OF THE TARGET TABLES DOES NOT EXIST IN " + tableName)
 
         # Exit a parse tree produced by sqlParser#select_core.
+
     def exitSelect_core(self, ctx: sqlParser.Select_coreContext):
         print(dataManager.savedData)
 
@@ -181,18 +178,19 @@ class tokenInterpreter(sqlListener):
         )
         # save reduced array
         dataManager.setSavedData([item for item in dataManager.savedData if eval(builtCondition)])
+
     # SELECT REDUCE (WHERE) SECTION
     def enterAlter_table_stmt(self, ctx: sqlParser.Alter_table_stmtContext):
-        #se llama al show tables del FileManager
+        # se llama al show tables del FileManager
         table_name_old = self.getTokenValue(ctx.table_name())
         table_name_new = self.getTokenValue(ctx.new_table_name())
-        r=(fileManager.showTablesFS())
-        #recorrer el listado de tablas y verificar que existan
+        r = (fileManager.showTablesFS())
+        # recorrer el listado de tablas y verificar que existan
         check = False
         for tables in r:
-            #print(tables)
-            #print(table_name_old)
-            if (tables==table_name_old):
+            # print(tables)
+            # print(table_name_old)
+            if (tables == table_name_old):
                 check = True
 
         if (check == True):
