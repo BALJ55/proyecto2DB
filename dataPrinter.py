@@ -1,32 +1,25 @@
+class dbDataPrinter():
 
-class dataPrinter():
+    def print_table(self, data, header):
 
-    def print_table(array, header):
-
-        array = list(array)
+        data = list(data)
         MaxLength = 0
-        array.insert(0,header)
+        data.insert(0, header)
 
-        for i in range(0, len(array)):
-            for x in array[i]:
+        for i in range(0, len(data)):
+            for x in data[i]:
                 MaxLength = len(str(x)) if MaxLength < len(str(x)) else MaxLength
 
-        print("-" * MaxLength * len(array[i]) + "----------")
+        print("-" * MaxLength * len(data[i]) + "----------")
 
-        for i in range(0, len(array)):
+        for i in range(0, len(data)):
 
-            for x in range(0, len(array[i])):
-
-                Length = MaxLength - len(str(array[i][x]))
-                print( "| "+str(array[i][x])+(" " * Length) , end=" " )
+            for x in range(0, len(data[i])):
+                Length = MaxLength - len(str(data[i][x]))
+                print("| " + str(data[i][x]) + (" " * Length), end=" ")
             print("|")
 
             if (not i):
-                print("-" * MaxLength * len(array[i])+"----------")
+                print("-" * MaxLength * len(data[i]) + "----------")
 
-        print("-" * MaxLength * len(array[i]) + "----------")
-
-
-
-
-
+        print("-" * MaxLength * len(data[i]) + "----------")
