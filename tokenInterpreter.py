@@ -172,18 +172,14 @@ class tokenInterpreter(sqlListener):
 
     # SELECT REDUCE (WHERE) SECTION
     def enterExprComparisonSecond(self, ctx: sqlParser.ExprComparisonSecondContext):
-        # build where clause
-        builtCondition = dataManager.queryWhereStringCLBuilder(
-            [col[0] for col in dataManager.savedStructure].index(self.getTokenValue(ctx.expr()[0])),
-            self.getTokenValue(ctx.expr()[1]),
-            self.getTokenValue(ctx.children[1])
-        )
-        # save reduced array
         if dataManager.multiples:
-            # AND already handled reduction
             pass
-            # dataManager.addToCache([item for item in dataManager.savedData if eval(builtCondition)])
         else:
+            builtCondition = dataManager.queryWhereStringCLBuilder(
+                [col[0] for col in dataManager.savedStructure].index(self.getTokenValue(ctx.expr()[0])),
+                self.getTokenValue(ctx.expr()[1]),
+                self.getTokenValue(ctx.children[1])
+            )
             dataManager.setSavedData(dataManager.handleNullValue(dataManager.savedData, builtCondition))
 
     # ! SELECT REDUCE (WHERE) SECTION
