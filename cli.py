@@ -19,7 +19,7 @@ class ParserExceptionErrorListener(ErrorListener):
         raise ParserException("line " + str(line) + ":" + str(column) + " " + msg)
 
 
-def parse(text):
+def parse(text, verbose, displayRegex):
     lexer = sqlLexer(InputStream(text))
     lexer.removeErrorListeners()
     lexer.addErrorListener(ParserExceptionErrorListener())
@@ -33,7 +33,7 @@ def parse(text):
     # Este es el nombre de la produccion inicial de la gramatica definida en sql.g4
     tree = parser.parse()
 
-    interpreter = tokenInterpreter()
+    interpreter = tokenInterpreter(verbose, displayRegex)
     walker = ParseTreeWalker()
     walker.walk(interpreter, tree)
 
@@ -46,13 +46,18 @@ Las construcciones validas para esta gramatica son todas aquellas
 
 
 def main(argv):
+    verbose = False
+    displayRegex = False
+    if "-v" in argv or "--verbose" in argv:
+        verbose = True
+    if "-r" in argv or "--regex" in argv:
+        displayRegex = True
     while True:
         text = input("> ")
 
         if (text == 'exit'):
             sys.exit()
-
-        parse(text)
+        parse(text, verbose, displayRegex)
         # try:
         #     text = input("> ")
         #

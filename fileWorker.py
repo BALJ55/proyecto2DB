@@ -68,3 +68,11 @@ class fileWorker():
             print (new_name)
             if (folder == old_name):
                 os.rename(data_folder + folder_path + folder, data_folder + folder_path + new_name)
+    #se crea una nueva funcion para los updates en donde deba leer y realizar un update de datos
+    def update_file(self, path, content):
+        #open for reading
+        file = open(data_folder + path, "r")
+        #saving
+        file = open(data_folder + path, "w+")
+        file.write(content)
+        file.close()
