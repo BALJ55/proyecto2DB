@@ -373,14 +373,43 @@ class tokenInterpreter(sqlListener):
             nTuple = []
             for i in range(0, len(tup)):
                 if i in targetsIndex:
-                    nTuple.append(dataManager.matchData(colTypes[i],exprs[i]))
+                    nTuple.append(dataManager.matchData(colTypes[i], exprs[i]))
                 else:
                     nTuple.append(tup[i])
             newData.append(tuple(nTuple))
 
-        fileManager.insertTableFS(targetTable,str(newData+untouchedData))
-        print("INSERT A "+targetTable+" EXITOSO")
-
-
+        fileManager.insertTableFS(targetTable, str(newData + untouchedData))
+        print("INSERT A " + targetTable + " EXITOSO")
 
     # ! UPDATE SECTION
+    # DELETE SECTION
+    def enterDelete_stmt(self, ctx: sqlParser.Delete_stmtContext):
+        targetTable = self.getTokenValue(ctx.table_name())
+
+        if targetTable not in fileManager.showTablesFS():
+            raise ValueError("TABLE " + targetTable + " DOES NOT EXIST IN " + fileManager.currentDatabase)
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING TABLE DATA FROM FILE SYSTEM")
+
+        dataManager.setSavedData(eval(fileManager.readTableFS(targetTable, "data")))
+        dataManager.addToCache(eval(fileManager.readTableFS(targetTable, "data")))
+        dataManager.setSavedStructure(eval(fileManager.readTableFS(targetTable, "structure")))
+
+    def exitDelete_stmt(self, ctx: sqlParser.Delete_stmtContext):
+        targetTable = self.getTokenValue(ctx.table_name())
+
+        untouchedData = [item for item in dataManager.cachedData[0] if item not in dataManager.savedData]
+        fileManager.insertTableFS(targetTable, str( untouchedData))
+        print("INSERT A " + targetTable + " EXITOSO")
+        pass
+
+    def exitParse(self, ctx: sqlParser.ParseContext):
+        dataManager.setSavedData([])
+        dataManager.setSavedStructure([])
+        dataManager.setCachedData([])
+
+    # ! DELETE SECTION
+
+    # ORDER BY
+    def enterOrdering_term(self, ctx: sqlParser.Ordering_termContext):
+        pass
+    # ! ORDER BY
