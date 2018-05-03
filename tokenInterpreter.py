@@ -88,6 +88,11 @@ class tokenInterpreter(sqlListener):
         pass
 
     # !CREATE TABLE SECTION
+    def enterDrop_table_stmt(self, ctx: sqlParser.Drop_table_stmtContext):
+        table_name = self.getTokenValue(ctx.table_name())
+        fileManager.removeTableFS(table_name)
+        pass
+
     # SHOW TABLES SECTION
     def enterShow_tables_stmt(self, ctx: sqlParser.Show_tables_stmtContext):
         print("TABLES IN " + fileManager.getDatabaseFS())

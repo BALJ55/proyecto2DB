@@ -41,6 +41,9 @@ class dbFileManager():
         else:
             raise ValueError('THE DATABASE WAS NOT SELECTED')
 
+    def removeTableFS(self, table_name):
+        self.fileWorker.remove_folder(self.currentDatabase + "/" + table_name)
+
     def useDatabaseFS(self, database):
         if database not in self.showDatabasesFS():
             raise ValueError(database + " DOES NOT EXIST IN THE DATABASE")
@@ -60,3 +63,4 @@ class dbFileManager():
 
     def updateFS(self, table, fileType):
         return self.fileWorker.read_file(self.currentDatabase + "/" + table + "/" + table + (self.dbInfoTerm if fileType == "data" else self.dbSchemaTerm))
+
