@@ -64,3 +64,10 @@ class dbFileManager():
     def updateFS(self, table, fileType):
         return self.fileWorker.read_file(self.currentDatabase + "/" + table + "/" + table + (self.dbInfoTerm if fileType == "data" else self.dbSchemaTerm))
 
+    def showColumnsFS(self, table, fileType):
+        if self.currentDatabase is not None:
+            return self.fileWorker.read_file(self.currentDatabase + "/" + table + "/" + table + (self.dbInfoTerm if fileType == "data" else self.dbSchemaTerm))
+        else:
+            raise TypeError("A COLUMN HAS NOT BEEN SELECTED")
+
+

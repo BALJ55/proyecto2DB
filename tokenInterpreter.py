@@ -89,7 +89,9 @@ class tokenInterpreter(sqlListener):
 
     # !CREATE TABLE SECTION
     def enterDrop_table_stmt(self, ctx: sqlParser.Drop_table_stmtContext):
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING TABLE NAME FROM LEXER")
         table_name = self.getTokenValue(ctx.table_name())
+        dataManager.verboseOutput(self.verbouseOutput, "REMOVING TABLE NAME FROM LEXER")
         fileManager.removeTableFS(table_name)
         pass
 
@@ -104,6 +106,11 @@ class tokenInterpreter(sqlListener):
         pass
 
     # SHOW TABLES SECTION
+    # SHOW COLUMNS IN SECTION WITH DESCRIPTION
+    def enterShow_columns_stmt(self, ctx: sqlParser.Show_columns_stmtContext):
+        tableName = self.getTokenValue(ctx.table_name())
+        print ("COLUMNS IN " + fileManager.showColumnsFS(tableName, "structure"))
+
     # INSERT SECTION
     def enterInsert_stmt(self, ctx: sqlParser.Insert_stmtContext):
 
