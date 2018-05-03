@@ -109,7 +109,7 @@ class tokenInterpreter(sqlListener):
     # SHOW COLUMNS IN SECTION WITH DESCRIPTION
     def enterShow_columns_stmt(self, ctx: sqlParser.Show_columns_stmtContext):
         tableName = self.getTokenValue(ctx.table_name())
-        print ("COLUMNS IN " + fileManager.showColumnsFS(tableName, "structure"))
+        print("COLUMNS IN " + fileManager.showColumnsFS(tableName, "structure"))
 
     # INSERT SECTION
     def enterInsert_stmt(self, ctx: sqlParser.Insert_stmtContext):
@@ -279,38 +279,6 @@ class tokenInterpreter(sqlListener):
 
     # ! ALTER TABLE SECTION
     # SELECT AND SECTION
-    def enterUpdate_stmt(self, ctx: sqlParser.Update_stmtContext):
-        # verificar que existe la tabla y su estructura
-        tableName = self.getTokenValue(ctx.table_name())
-        tableStructure = eval(fileManager.readTableFS(tableName, "structure"))
-        # sacar el listado de tablas
-        r = (fileManager.showTablesFS())
-        check = False
-        for tables in r:
-            if (tableName == r):
-                check = True
-        # columnName = self.getTokenValue(column.column_name())
-        # table structure
-        # input col structure
-        targetCols = [self.getTokenValue(col) for col in ctx.column_name()]
-
-        newData = []
-
-        values = [self.getTokenValue(value) for value in ctx.expr()]
-        colNames = [col[0] for col in tableStructure]
-        colTypes = [col[1] for col in tableStructure]
-        check = True
-
-        # valida que existe el campo
-        for cols in colNames:
-            if (cols not in targetCols):
-                check = False
-        if len(targetCols):
-            newData = [""] * len(tableStructure)
-            for column in colTypes:
-                colUpdate = targetCols.index(column)
-                valueUpdate = colNames.index(column)
-                newData[colUpdate] = dataManager.matchData(colTypes[colUpdate], values[valueUpdate])
 
     def enterExprAnd(self, ctx: sqlParser.ExprAndContext):
         dataManager.verboseOutput(self.verbouseOutput, "AND NODE DETECTED")
@@ -357,4 +325,62 @@ class tokenInterpreter(sqlListener):
 
         dataManager.verboseOutput(self.verbouseOutput, "SAVING DATA IN DATA MANAGER")
         dataManager.setSavedData(dataManager.handleOrStmt(reducedData))
+
     # ! SELECT OR SECTION
+    # UPDATE SECTION
+    def enterUpdate_stmt(self, ctx: sqlParser.Update_stmtContext):
+
+        dataManager.verboseOutput(self.verbouseOutput, "UPDATE NODE DETECTED")
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING QUERY DATA FROM LEXER")
+
+        targetTable = self.getTokenValue(ctx.table_name())
+        targetCols = [self.getTokenValue(col) for col in ctx.column_name()]
+
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING TABLE STRUCTURE FROM FILE SYSTEM")
+
+        tableStructure = eval(fileManager.readTableFS(targetTable, "structure"))
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING TABLE DATA FROM FILE SYSTEM")
+
+        tableData = eval(fileManager.readTableFS(targetTable, "data"))
+        colNames = [col[0] for col in tableStructure]
+
+        if targetTable not in fileManager.showTablesFS():
+            raise ValueError("TABLE " + targetTable + " DOES NOT EXIST IN " + fileManager.currentDatabase)
+        if all(value in colNames for value in targetCols):
+            dataManager.verboseOutput(self.verbouseOutput, "SAVING DATA IN CACHE FOR REDUCTION")
+            dataManager.setSavedStructure(tableStructure)
+            dataManager.setSavedData(tableData)
+            dataManager.addToCache(tableData)
+        else:
+            dataManager.verboseOutput(self.verbouseOutput, "FOUND INCONSISTENT DECLARATION IN QUERY")
+            raise ValueError("ATLEAST ONE OF THE TARGET TABLES DOES NOT EXIST IN " + targetTable)
+
+    def exitUpdate_stmt(self, ctx: sqlParser.Update_stmtContext):
+
+        targetTable = self.getTokenValue(ctx.table_name())
+
+        colNames = [col[0] for col in dataManager.savedStructure]
+        exprs = [self.getTokenValue(expr) for expr in ctx.expr() if isinstance(expr, sqlParser.ExprLiteralValueContext)]
+        targets = [self.getTokenValue(col) for col in ctx.column_name()]
+        targetsIndex = [colNames.index(elem) for elem in targets]
+
+        untouchedData = [item for item in dataManager.cachedData[0] if item not in dataManager.savedData]
+        reducedData = dataManager.savedData
+        newData = []
+        colTypes = [col[1] for col in dataManager.savedStructure]
+
+        for tup in reducedData:
+            nTuple = []
+            for i in range(0, len(tup)):
+                if i in targetsIndex:
+                    nTuple.append(dataManager.matchData(colTypes[i],exprs[i]))
+                else:
+                    nTuple.append(tup[i])
+            newData.append(tuple(nTuple))
+
+        fileManager.insertTableFS(targetTable,str(newData+untouchedData))
+        print("INSERT A "+targetTable+" EXITOSO")
+
+
+
+    # ! UPDATE SECTION
