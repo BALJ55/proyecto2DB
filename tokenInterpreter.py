@@ -231,7 +231,7 @@ class tokenInterpreter(sqlListener):
 
         # Exit a parse tree produced by sqlParser#select_core.
 
-    def exitSelect_core(self, ctx: sqlParser.Select_coreContext):
+    def exitFactored_select_stmt(self, ctx: sqlParser.Factored_select_stmtContext):
         dataManager.verboseOutput(self.verbouseOutput, "PRINTING SAVED DATA FROM FILE MANAGER")
         dataPrinter.print_table(dataManager.savedData, [col[0] for col in dataManager.savedStructure])
         # print(dataManager.savedData)
@@ -411,5 +411,13 @@ class tokenInterpreter(sqlListener):
 
     # ORDER BY
     def enterOrdering_term(self, ctx: sqlParser.Ordering_termContext):
+        targetTable = [self.getTokenValue(ctx.expr())]
+        print(dataManager.savedData)
+        colNames = [col[0] for col in dataManager.savedStructure]
+        targetIndex = [colNames.index(elem) for elem in targetTable][0]
+
+        # pdb.set_trace()
+        dataManager.savedData = sorted(dataManager.savedData, key=lambda x: x[targetIndex])
+        print(dataManager.savedData)
         pass
     # ! ORDER BY
