@@ -7,7 +7,7 @@ from dataRegex import dataValidator
 
 
 class dbDataManager():
-    allowedDataTypes = ['INT', 'FLOAT', 'DATE', 'CHAR']
+    allowedDataTypes = ['INT', 'FLOAT', 'DATE', 'CHAR','VARCHAR']
     savedData = []
     cachedData = []
     savedStructure = []
@@ -19,7 +19,7 @@ class dbDataManager():
         pass
 
     def validateCreateTableTypes(self, input):
-        if input not in self.allowedDataTypes:
+        if input.upper() not in self.allowedDataTypes:
             raise ValueError(input + " IS NOT A VALID DATA TYPE")
         else:
             return input
@@ -45,20 +45,23 @@ class dbDataManager():
             return (tup for tup in array if operator)
 
     def matchData(self, type, value):
+        type = type.upper()
+        value = value.replace("'", "")
+        value = value.replace('"', "")
         if type == "INT":
             try:
                 return int(value)
-            except Exception:
+            except ValueError:
                 print(value + " IS NOT A INTEGER")
         if type == "FLOAT":
             try:
                 return float(value)
-            except Exception:
+            except  ValueError:
                 print(value + " IS NOT A FLOAT")
         if type == "CHAR" or type == "DATE" or type == "VARCHAR":
             try:
                 return str(value)
-            except Exception:
+            except  ValueError:
                 print(value + " IS NOT A CHAR OR DATE")
 
     def generateSpecificColOrder(self, cols, structure):

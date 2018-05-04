@@ -53,7 +53,12 @@ def main(argv):
     if "-r" in argv or "--regex" in argv:
         displayRegex = True
     while True:
-
+        #
+        # text = input("> ")
+        #
+        # if (text == 'exit'):
+        #     sys.exit()
+        # parse(text, verbose, displayRegex)
         try:
 
             text = input("> ")
