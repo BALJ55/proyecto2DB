@@ -109,7 +109,8 @@ class tokenInterpreter(sqlListener):
     # SHOW COLUMNS IN SECTION WITH DESCRIPTION
     def enterShow_columns_stmt(self, ctx: sqlParser.Show_columns_stmtContext):
         tableName = self.getTokenValue(ctx.table_name())
-        print("COLUMNS IN " + fileManager.showColumnsFS(tableName, "structure"))
+        dataPrinter.print_table([table for table in eval(fileManager.showColumnsFS(tableName, "structure"))],['Column Name', "type"])
+
 
     # INSERT SECTION
     def enterInsert_stmt(self, ctx: sqlParser.Insert_stmtContext):
