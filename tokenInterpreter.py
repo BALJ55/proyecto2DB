@@ -208,6 +208,7 @@ class tokenInterpreter(sqlListener):
         targets = [self.getTokenValue(target) for target in ctx.result_column()]
 
         dataManager.verboseOutput(self.verbouseOutput, "CHECKING IF QUERY IS SELECT *")
+
         if "*" in targets:
             dataManager.verboseOutput(self.verbouseOutput, "QUERY IS SELECT *")
             dataManager.setSavedData(tableData)
@@ -233,7 +234,14 @@ class tokenInterpreter(sqlListener):
 
     def exitFactored_select_stmt(self, ctx: sqlParser.Factored_select_stmtContext):
         dataManager.verboseOutput(self.verbouseOutput, "PRINTING SAVED DATA FROM FILE MANAGER")
-        dataPrinter.print_table(dataManager.savedData, [col[0] for col in dataManager.savedStructure])
+        structure = [col[0] for col in dataManager.savedStructure]
+        finalData = dataManager.savedData
+        exprs = ctx.expr()
+        if len(exprs):
+            limit = self.getTokenValue(exprs[0])
+            finalData = finalData[:int(limit)]
+
+        dataPrinter.print_table(finalData, structure)
         # print(dataManager.savedData)
 
     # !SELECT SECTION
@@ -398,7 +406,7 @@ class tokenInterpreter(sqlListener):
         targetTable = self.getTokenValue(ctx.table_name())
 
         untouchedData = [item for item in dataManager.cachedData[0] if item not in dataManager.savedData]
-        fileManager.insertTableFS(targetTable, str( untouchedData))
+        fileManager.insertTableFS(targetTable, str(untouchedData))
         print("INSERT A " + targetTable + " EXITOSO")
         pass
 
@@ -412,12 +420,9 @@ class tokenInterpreter(sqlListener):
     # ORDER BY
     def enterOrdering_term(self, ctx: sqlParser.Ordering_termContext):
         targetTable = [self.getTokenValue(ctx.expr())]
-        print(dataManager.savedData)
         colNames = [col[0] for col in dataManager.savedStructure]
         targetIndex = [colNames.index(elem) for elem in targetTable][0]
-
         # pdb.set_trace()
         dataManager.savedData = sorted(dataManager.savedData, key=lambda x: x[targetIndex])
-        print(dataManager.savedData)
-        pass
+
     # ! ORDER BY
