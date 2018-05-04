@@ -7,7 +7,7 @@ from dataRegex import dataValidator
 
 
 class dbDataManager():
-    allowedDataTypes = ['INT', 'FLOAT', 'DATE', 'CHAR','VARCHAR']
+    allowedDataTypes = ['INT', 'FLOAT', 'DATE', 'CHAR','VARCHAR','DATETIME']
     savedData = []
     cachedData = []
     savedStructure = []
@@ -58,7 +58,7 @@ class dbDataManager():
                 return float(value)
             except  ValueError:
                 print(value + " IS NOT A FLOAT")
-        if type == "CHAR" or type == "DATE" or type == "VARCHAR":
+        if type == "CHAR" or type == "DATE" or type == "VARCHAR" or type =="DATETIME":
             try:
                 return str(value)
             except  ValueError:

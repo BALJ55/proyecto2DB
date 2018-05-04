@@ -227,6 +227,7 @@ class tokenInterpreter(sqlListener):
                     filteredData.append(tuple(filteredValue))
                 dataManager.verboseOutput(self.verbouseOutput, "DATA SAVED IN DATA MANAGER")
                 dataManager.setSavedData(filteredData)
+                dataManager.setSavedStructure([ [target] for target in targets])
             else:
                 dataManager.verboseOutput(self.verbouseOutput, "FOUND INCONSISTENT DECLARATION IN QUERY")
                 raise ValueError("ATLEAST ONE OF THE TARGET TABLES DOES NOT EXIST IN " + tableName)

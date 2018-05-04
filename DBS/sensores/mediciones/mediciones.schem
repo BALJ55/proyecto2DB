@@ -1,0 +1,1 @@
+[["id", "int"], ["fecha", "datetime"], ["id_estacion", "int"], ["id_encargado", "int"], ["id_sensor", "int"]]

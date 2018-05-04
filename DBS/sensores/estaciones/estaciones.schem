@@ -1,0 +1,1 @@
+[["id", "int"], ["nombre", "varchar"], ["location", "varchar"], ["latitud", "float"], ["longitud", "float"]]
