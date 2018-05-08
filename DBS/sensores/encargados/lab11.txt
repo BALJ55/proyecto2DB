@@ -1,0 +1,6 @@
+1)
+	CREATE TRIGGER estudiante_bueno
+	AFTER INSERT ON estudiante WHEN new.promedio <=95
+	BEGIN
+		INSERT INTO asignacion (estudiante_id,materia,nota) VALUES (new.id,'A',new.promedio);
+	END;

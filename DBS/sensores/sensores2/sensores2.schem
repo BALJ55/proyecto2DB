@@ -1,0 +1,1 @@
+[["id", "int"], ["nombre", "varchar"], ["uso", "varchar"], ["modelo", "int"], ["cantidad", "int"], ["error", "float"]]

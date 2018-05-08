@@ -208,6 +208,7 @@ class tokenInterpreter(sqlListener):
         targets = [self.getTokenValue(target) for target in ctx.result_column()]
 
         dataManager.verboseOutput(self.verbouseOutput, "CHECKING IF QUERY IS SELECT *")
+        dataManager.setSavedStructure(tableStructure)
 
         if "*" in targets:
             dataManager.verboseOutput(self.verbouseOutput, "QUERY IS SELECT *")
@@ -220,7 +221,6 @@ class tokenInterpreter(sqlListener):
                 dataManager.selectStruct(targetsIndex)
                 dataManager.verboseOutput(self.verbouseOutput, "DATA SAVED IN DATA MANAGER")
                 dataManager.setSavedData(tableData)
-                dataManager.setSavedStructure(tableStructure)
             else:
                 dataManager.verboseOutput(self.verbouseOutput, "FOUND INCONSISTENT DECLARATION IN QUERY")
                 raise ValueError("ATLEAST ONE OF THE TARGET TABLES DOES NOT EXIST IN " + tableName)
@@ -260,7 +260,7 @@ class tokenInterpreter(sqlListener):
     # !SELECT SECTION
 
     # SELECT REDUCE (WHERE) SECTION
-    def enterExprComparisonSecond(self, ctx: sqlParser.ExprComparisonSecondContext):
+    def enterExprComparisonFirst(self, ctx: sqlParser.ExprComparisonSecondContext):
         dataManager.verboseOutput(self.verbouseOutput, "WHERE CLAUSE OPERATION")
 
         dataManager.verboseOutput(self.verbouseOutput, "CHECKING TREE FOR OTHER WHERE OPERATIONS")
@@ -268,6 +268,7 @@ class tokenInterpreter(sqlListener):
             dataManager.verboseOutput(self.verbouseOutput, "AND/OR NODES WILL HANDLE REDUCTION, PASSING...")
             pass
         else:
+            print("we in bois")
             dataManager.verboseOutput(self.verbouseOutput, "SIMPLE WHERE REDUCTION")
             dataManager.verboseOutput(self.verbouseOutput, "GENERATING REDUCTION FILTER")
 
@@ -276,6 +277,7 @@ class tokenInterpreter(sqlListener):
                 self.getTokenValue(ctx.expr()[1]),
                 self.getTokenValue(ctx.children[1])
             )
+            print(builtCondition)
             dataManager.verboseOutput(self.verbouseOutput, "SAVING REDUCED DATA")
 
             dataManager.setSavedData(dataManager.handleNullValue(dataManager.savedData, builtCondition))
@@ -428,6 +430,8 @@ class tokenInterpreter(sqlListener):
         dataManager.setSavedStructure([])
         dataManager.setCachedData([])
         dataManager.specificColsArray = []
+        dataManager.multiples = False
+
 
     # ! DELETE SECTION
 

@@ -105,7 +105,6 @@ INSERT INTO sensores (id,nombre,uso,modelo,cantidad,error) VALUES (97,'y6h5','ra
 INSERT INTO sensores (id,nombre,uso,modelo,cantidad,error) VALUES (98,'t5t3','ruido',2018,3,0.99);
 INSERT INTO sensores (id,nombre,uso,modelo,cantidad,error) VALUES (99,'46y5','presion',2013,2,0.58);
 INSERT INTO sensores (id,nombre,uso,modelo,cantidad,error) VALUES (100,'hyt','calor',2014,7,0.59);
-
 INSERT INTO estaciones (id,nombre,location,latitud,longitud) VALUES (1,'YGgQi','E7V8a',104.51,167.35);
 INSERT INTO estaciones (id,nombre,location,latitud,longitud) VALUES (2,'HiIxd','G9a4p',162.63,131.12);
 INSERT INTO estaciones (id,nombre,location,latitud,longitud) VALUES (3,'QQGcx','I1M1t',110.56,114.23);
@@ -206,7 +205,6 @@ INSERT INTO estaciones (id,nombre,location,latitud,longitud) VALUES (97,'gEOrT',
 INSERT INTO estaciones (id,nombre,location,latitud,longitud) VALUES (98,'crYhb','u8Y8B',160.69,110.38);
 INSERT INTO estaciones (id,nombre,location,latitud,longitud) VALUES (99,'SgFsR','c6J7K',153.44,123.53);
 INSERT INTO estaciones (id,nombre,location,latitud,longitud) VALUES (100,'CdlbP','F9K7K',196.84,159.14);
-
 INSERT INTO encargados (id,nombre,apellido,puesto,edad,ingreso) VALUES (1,'Bernadette','Patricia','encargado',32,2003);
 INSERT INTO encargados (id,nombre,apellido,puesto,edad,ingreso) VALUES (2,'Rolf','Dante','planta',57,1981);
 INSERT INTO encargados (id,nombre,apellido,puesto,edad,ingreso) VALUES (3,'Caroll','Silas','planta',61,1997);
@@ -307,7 +305,6 @@ INSERT INTO encargados (id,nombre,apellido,puesto,edad,ingreso) VALUES (97,'Lupi
 INSERT INTO encargados (id,nombre,apellido,puesto,edad,ingreso) VALUES (98,'Roy','Lucas','planta',65,1986);
 INSERT INTO encargados (id,nombre,apellido,puesto,edad,ingreso) VALUES (99,'Zena','Herbert','planta',52,1981);
 INSERT INTO encargados (id,nombre,apellido,puesto,edad,ingreso) VALUES (100,'Marlene','Elias','planta',46,1999);
-
 INSERT INTO mediciones (id,fecha,id_estacion,id_encargado,id_sensor) VALUES (1, '2018-01-01',95,36,36);
 INSERT INTO mediciones (id,fecha,id_estacion,id_encargado,id_sensor) VALUES (2, '2018-02-01',27,78,79);
 INSERT INTO mediciones (id,fecha,id_estacion,id_encargado,id_sensor) VALUES (3, '2018-03-01',87,89,39);
