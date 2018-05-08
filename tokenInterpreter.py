@@ -379,18 +379,26 @@ class tokenInterpreter(sqlListener):
             raise ValueError("ATLEAST ONE OF THE TARGET TABLES DOES NOT EXIST IN " + targetTable)
 
     def exitUpdate_stmt(self, ctx: sqlParser.Update_stmtContext):
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING TARGET TABLE FROM LEXER")
 
         targetTable = self.getTokenValue(ctx.table_name())
 
         colNames = [col[0] for col in dataManager.savedStructure]
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING EXPRETIONS FROM LEXER")
+
         exprs = [self.getTokenValue(expr) for expr in ctx.expr() if isinstance(expr, sqlParser.ExprLiteralValueContext)]
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING TARGETS FROM LEXER")
+
         targets = [self.getTokenValue(col) for col in ctx.column_name()]
         targetsIndex = [colNames.index(elem) for elem in targets]
+
+        dataManager.verboseOutput(self.verbouseOutput, "REDUCING DATA FOR UPDATE")
 
         untouchedData = [item for item in dataManager.cachedData[0] if item not in dataManager.savedData]
         reducedData = dataManager.savedData
         newData = []
         colTypes = [col[1] for col in dataManager.savedStructure]
+        dataManager.verboseOutput(self.verbouseOutput, "GENERATING NEW DATA")
 
         for tup in reducedData:
             nTuple = []
@@ -400,47 +408,70 @@ class tokenInterpreter(sqlListener):
                 else:
                     nTuple.append(tup[i])
             newData.append(tuple(nTuple))
+        dataManager.verboseOutput(self.verbouseOutput, "UPDATING DATA IN FILE SYSTEM")
 
         fileManager.insertTableFS(targetTable, str(newData + untouchedData))
-        print("INSERT A " + targetTable + " EXITOSO")
+        print("UPDATE DE " + targetTable + " EXITOSO")
 
     # ! UPDATE SECTION
     # DELETE SECTION
     def enterDelete_stmt(self, ctx: sqlParser.Delete_stmtContext):
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING TARGET TABLE FROM LEXER")
+
         targetTable = self.getTokenValue(ctx.table_name())
 
+        dataManager.verboseOutput(self.verbouseOutput, "EVALUATING TABLE AGAINST STRUCTURE DEFINED IN FILE SYSTEM")
         if targetTable not in fileManager.showTablesFS():
             raise ValueError("TABLE " + targetTable + " DOES NOT EXIST IN " + fileManager.currentDatabase)
         dataManager.verboseOutput(self.verbouseOutput, "FETCHING TABLE DATA FROM FILE SYSTEM")
 
+        dataManager.verboseOutput(self.verbouseOutput, "SETTING DATA IN DATA MANAGER FOR REDUCTION")
         dataManager.setSavedData(eval(fileManager.readTableFS(targetTable, "data")))
         dataManager.addToCache(eval(fileManager.readTableFS(targetTable, "data")))
         dataManager.setSavedStructure(eval(fileManager.readTableFS(targetTable, "structure")))
 
     def exitDelete_stmt(self, ctx: sqlParser.Delete_stmtContext):
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING TARGET TABLE FROM LEXER")
+
         targetTable = self.getTokenValue(ctx.table_name())
 
+        dataManager.verboseOutput(self.verbouseOutput, "CALCULATING UNTOUCHED DATA")
+
         untouchedData = [item for item in dataManager.cachedData[0] if item not in dataManager.savedData]
+        dataManager.verboseOutput(self.verbouseOutput, "SAVING REDUCED DATA IN FILE")
+
         fileManager.insertTableFS(targetTable, str(untouchedData))
-        print("INSERT A " + targetTable + " EXITOSO")
+        print("DELETE DE  " + targetTable + " EXITOSO")
         pass
 
     def exitParse(self, ctx: sqlParser.ParseContext):
+        dataManager.verboseOutput(self.verbouseOutput, "SETTING DATA MANAGER VALUES TO DEFAULTS")
+
         dataManager.setSavedData([])
         dataManager.setSavedStructure([])
         dataManager.setCachedData([])
         dataManager.specificColsArray = []
         dataManager.multiples = False
+        dataManager.verboseOutput(self.verbouseOutput, "EXECUTION ENDED")
+
 
 
     # ! DELETE SECTION
 
     # ORDER BY
     def enterOrdering_term(self, ctx: sqlParser.Ordering_termContext):
+        dataManager.verboseOutput(self.verbouseOutput, "ORDER NODE DETECTED")
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING TARGET TABLE FROM LEXER")
+
         targetTable = [self.getTokenValue(ctx.expr())]
+        dataManager.verboseOutput(self.verbouseOutput, "FETCHING COL NAMES FROM LEXER")
+
         colNames = [col[0] for col in dataManager.savedStructure]
+
         targetIndex = [colNames.index(elem) for elem in targetTable][0]
         # pdb.set_trace()
+        dataManager.verboseOutput(self.verbouseOutput, "GENERATING AND SAVING ORDERED DATA IN MANAGER")
+
         dataManager.savedData = sorted(dataManager.savedData, key=lambda x: x[targetIndex])
 
     # ! ORDER BY
