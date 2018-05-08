@@ -53,29 +53,29 @@ def main(argv):
     if "-r" in argv or "--regex" in argv:
         displayRegex = True
     while True:
-        #
-        # text = input("> ")
-        #
-        # if (text == 'exit'):
-        #     sys.exit()
-        # parse(text, verbose, displayRegex)
-        try:
 
-            text = input("> ")
+        text = input("> ")
 
-            if (text == 'exit'):
-                sys.exit()
-            parse(text, verbose, displayRegex)
-
-        except ParserException as e:
-            print("Got a parser exception:", e.value)
-
-        except EOFError as e:
-            print("Bye")
+        if (text == 'exit'):
             sys.exit()
-
-        except Exception as e:
-            print("Got exception: ", e)
+        parse(text, verbose, displayRegex)
+        # try:
+        #
+        #     text = input("> ")
+        #
+        #     if (text == 'exit'):
+        #         sys.exit()
+        #     parse(text, verbose, displayRegex)
+        #
+        # except ParserException as e:
+        #     print("Got a parser exception:", e.value)
+        #
+        # except EOFError as e:
+        #     print("Bye")
+        #     sys.exit()
+        #
+        # except Exception as e:
+        #     print("Got exception: ", e)
 
 
 if __name__ == '__main__':

@@ -12,6 +12,7 @@ class dbDataManager():
     cachedData = []
     savedStructure = []
     multiples = False
+    specificColsArray=[]
     reductor = ""
     dv = dataValidator().getValidationRegex()
 
@@ -84,6 +85,9 @@ class dbDataManager():
 
     def addToCache(self, data):
         self.cachedData.append(data)
+
+    def selectStruct(self,strucute):
+        self.specificColsArray = strucute
 
     def handleNullValue(self, data, bc):
         returnData = []

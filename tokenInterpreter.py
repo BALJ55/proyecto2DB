@@ -203,7 +203,6 @@ class tokenInterpreter(sqlListener):
 
         dataManager.verboseOutput(self.verbouseOutput,
                                   "SETTING TABLE STRUCTURE IN DATA MANAGER FOR REDUCTION OPERATIONS")
-        dataManager.setSavedStructure(tableStructure)
 
         # insert target columns
         targets = [self.getTokenValue(target) for target in ctx.result_column()]
@@ -218,16 +217,10 @@ class tokenInterpreter(sqlListener):
             dataManager.verboseOutput(self.verbouseOutput, "VALIDATING TARGET COLUMNS WITH SAVED STRUCTURE")
             if all(value in colNames for value in targets):
                 targetsIndex = [colNames.index(elem) for elem in targets]
-                filteredData = []
-                dataManager.verboseOutput(self.verbouseOutput, "FILTERING DATA")
-                for tup in tableData:
-                    filteredValue = []
-                    for col in targetsIndex:
-                        filteredValue.append(tup[col])
-                    filteredData.append(tuple(filteredValue))
+                dataManager.selectStruct(targetsIndex)
                 dataManager.verboseOutput(self.verbouseOutput, "DATA SAVED IN DATA MANAGER")
-                dataManager.setSavedData(filteredData)
-                dataManager.setSavedStructure([ [target] for target in targets])
+                dataManager.setSavedData(tableData)
+                dataManager.setSavedStructure(tableStructure)
             else:
                 dataManager.verboseOutput(self.verbouseOutput, "FOUND INCONSISTENT DECLARATION IN QUERY")
                 raise ValueError("ATLEAST ONE OF THE TARGET TABLES DOES NOT EXIST IN " + tableName)
@@ -238,6 +231,24 @@ class tokenInterpreter(sqlListener):
         dataManager.verboseOutput(self.verbouseOutput, "PRINTING SAVED DATA FROM FILE MANAGER")
         structure = [col[0] for col in dataManager.savedStructure]
         finalData = dataManager.savedData
+
+        if len(dataManager.specificColsArray):
+
+            filteredData = []
+            newStructure = []
+            dataManager.verboseOutput(self.verbouseOutput, "FILTERING DATA")
+            for tup in finalData:
+                filteredValue = []
+                for col in dataManager.specificColsArray:
+                    filteredValue.append(tup[col])
+                filteredData.append(tuple(filteredValue))
+            finalData = filteredData
+            for colIndex in range(0,len(structure)):
+                if colIndex in dataManager.specificColsArray:
+                    newStructure.append(structure[colIndex])
+            structure = newStructure
+
+
         exprs = ctx.expr()
         if len(exprs):
             limit = self.getTokenValue(exprs[0])
@@ -416,6 +427,7 @@ class tokenInterpreter(sqlListener):
         dataManager.setSavedData([])
         dataManager.setSavedStructure([])
         dataManager.setCachedData([])
+        dataManager.specificColsArray = []
 
     # ! DELETE SECTION
 
